@@ -6,22 +6,22 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
-class Video extends Model
+class Live extends Model
 {
     use HasFactory;
     public $incrementing = false; 
     protected $keyType = 'string';
+
     protected $fillable = [
         'title',
         'description',
-        'couverture',
-        'video_url',
-        'status',
-        'duration',
-        'views',
+        'startTime',
+        'endingTime',
+        'viewers',
+        'lien',
     ];
 
-      protected static function boot()
+    protected static function boot()
     {
         parent::boot();
         static::creating(function ($model) {

@@ -42,7 +42,6 @@ class VideoController extends Controller
             'video_url' => 'nullable|file|mimes:mp4,mov,avi,mkv|max:20480', 
             'status' => 'in:published,draft',
             'duration' => 'required|string',
-            'views'  => 'nullable|integer',
             ]);
 
             $video = new Video();
@@ -53,7 +52,6 @@ class VideoController extends Controller
             $video->video_url = $request->video_url;
             $video->status = $request->status;
             $video->duration = $request->duration;
-            $video->views = $request->views ?? 0;
 
 
             if ($request->hasFile('couverture')) {
@@ -117,7 +115,6 @@ class VideoController extends Controller
                 'video_url' => 'sometimes|file|mimes:mp4,mov,avi,mkv|max:20480',
                 'status' => 'sometimes|in:published,draft',
                 'duration' => 'sometimes|string',
-                'views' => 'sometimes|integer',
             ]);
 
             if ($request->has('programme_id')) {
@@ -195,5 +192,22 @@ class VideoController extends Controller
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
+    }
+
+    // Incrémenter les vues
+    public function incrementView($id)
+    {
+        $videos = Video::find($id);
+
+        if (!$videos) {
+            return response()->json(['message' => 'Vidéo introuvable'], 404);
+        }
+
+        $videos->increment('views');
+
+        return response()->json([
+            'message' => 'Vue ajoutée',
+            'views' => $videos->views
+        ], 200);
     }
 }
