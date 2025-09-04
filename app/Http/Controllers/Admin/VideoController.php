@@ -179,20 +179,20 @@ class VideoController extends Controller
         }
     }
 
-    public function list_videos_for_user(Request $request)
-    {
-        try {
+    // public function list_videos_for_user(Request $request)
+    // {
+    //     try {
             
-            $videos = Video::where('status', 'published')->get();
+    //         $videos = Video::where('status', 'published')->get();
 
-            return response()->json([
-                'message' => 'Liste des vidéos',
-                'data' => $videos,
-            ], 200);
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
-    }
+    //         return response()->json([
+    //             'message' => 'Liste des vidéos',
+    //             'data' => $videos,
+    //         ], 200);
+    //     } catch (\Exception $e) {
+    //         return response()->json(['error' => $e->getMessage()], 500);
+    //     }
+    // }
 
     // Incrémenter les vues
     public function incrementView($id)
@@ -210,4 +210,20 @@ class VideoController extends Controller
             'views' => $videos->views
         ], 200);
     }
+
+public function list_videos_for_user(Request $request)
+{
+    try {
+        $videos = Video::where('status', 'published')
+            ->get(['id', 'title', 'description', 'couverture', 'video_url', 'views', 'duration']);
+
+        return response()->json([
+            'message' => 'Liste des vidéos',
+            'data' => $videos,
+        ], 200);
+    } catch (\Exception $e) {
+        return response()->json(['error' => $e->getMessage()], 500);
+    }
+}
+
 }

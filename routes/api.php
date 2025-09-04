@@ -10,6 +10,8 @@ use App\Http\Controllers\ArticleUserController;
 use App\Http\Controllers\Admin\StatController;
 use App\Http\Controllers\Admin\VideoController;
 use App\Http\Controllers\Admin\LiveController;
+use App\Http\Controllers\ContactController;
+
 //Auth
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -23,6 +25,8 @@ Route::get('/list_programmes_for_user', [ProgrammeController::class, 'list_progr
 Route::get('/list_article_for_user', [ArticleUserController::class, 'list_article_for_user']);
 
 Route::get('/list_videos_for_user', [VideoController::class, 'list_videos_for_user']);
+Route::get('/list_live_for_user', [LiveController::class, 'list_live_for_user']);
+
 
 Route::middleware('auth:sanctum')->group(function () {
 
@@ -53,6 +57,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/list_videos', [VideoController::class, 'list_videos']);
     Route::post('/update_video/{id}', [VideoController::class, 'update_video']);
     Route::delete('/delete_video/{id}', [VideoController::class, 'delete_video']);
+    Route::post('/increment_views/{id}', [VideoController::class, 'incrementView']);
 
 
     Route::get('/lives', [LiveController::class, 'index']);
@@ -60,11 +65,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/lives/{id}', [LiveController::class, 'show']);
     Route::post('/update/lives/{id}', [LiveController::class, 'update']);
     Route::delete('/delete/lives/{id}', [LiveController::class, 'destroy']);
-
-   // Incrémenter viewers
-   Route::post('/lives/{id}/view', [LiveController::class, 'incrementViewers']);
+    Route::post('/lives/{id}/view', [LiveController::class, 'incrementViewers']);
 });
 
+Route::post('/contact', [ContactController::class, 'send']);
 
-Route::post('/increment_views/{id}', [VideoController::class, 'incrementView']);
 

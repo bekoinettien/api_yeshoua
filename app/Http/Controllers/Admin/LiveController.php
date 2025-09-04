@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Models\Live;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Exception;
 
 class LiveController extends Controller
 {
@@ -27,12 +28,20 @@ class LiveController extends Controller
     }
 
     // Liste des lives
-    public function index()
+    public function index(Request $request)
     {
-        return response()->json([
+        try{
+            if($response =$this->checkAdmin($request)){
+                return $response;
+            }
+             return response()->json([
             'message' => 'Liste des lives',
             'data' => Live::all()
         ], 200);
+        }catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+       
     }
 
     // Créer un live
@@ -77,21 +86,34 @@ class LiveController extends Controller
     }
 
     // Afficher un live
-    public function show($id)
+    public function show(Request $request ,$id)
     {
-        $live = Live::find($id);
+        try{
+            if($response=$this->checkAdmin($request)){
+                return $response;
+            }
+            $live = Live::find($id);
 
         if (!$live) {
             return response()->json(['message' => 'Live introuvable'], 404);
         }
 
-        return response()->json($live, 200);
+          return response()->json($live, 200);
+        }catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+        
     }
 
     // Modifier un live
     public function update(Request $request, $id)
     {
-        $live = Live::find($id);
+        try{
+            if($response=$this->checkAdmin($request)){
+                return $response;
+
+            }
+            $live = Live::find($id);
 
         if (!$live) {
             return response()->json(['message' => 'Live introuvable'], 404);
@@ -106,18 +128,27 @@ class LiveController extends Controller
             'viewers' => 'sometimes|integer|min:0',
         ]);
 
-        $live->update($validated);
+        $live->save($validated);
 
         return response()->json([
             'message' => 'Live mis à jour avec succès',
             'data' => $live
         ], 200);
+        }catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+        
     }
 
     // Supprimer un live
-    public function destroy($id)
+    public function destroy(Request $request,$id)
     {
-        $live = Live::find($id);
+        try{
+            if($response=$this->checkAdmin($request)){
+                return $response;
+
+            }
+            $live = Live::find($id);
 
         if (!$live) {
             return response()->json(['message' => 'Live introuvable'], 404);
@@ -126,6 +157,10 @@ class LiveController extends Controller
         $live->delete();
 
         return response()->json(['message' => 'Live supprimé avec succès'], 200);
+        }catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+        
     }
 
     // Incrémenter les viewers
@@ -143,5 +178,20 @@ class LiveController extends Controller
             'message' => 'Vue ajoutée',
             'viewers' => $live->viewers
         ], 200);
+    }
+
+    public function list_live_for_user(Request $request)
+    {
+        try {
+            $lives = Live::select('id', 'title', 'description', 'viewers')
+            ->get();
+
+        return response()->json([
+            'message' => 'Liste des lives',
+            'data' => $lives,
+        ], 200);
+    } catch (\Exception $e) {
+        return response()->json(['error' => $e->getMessage()], 500);
+    }
     }
 }
